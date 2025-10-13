@@ -1,0 +1,13 @@
+Fase 3:
+Base configs: Alle Switches
+VLAN Instellingen
+STP Topology geconfigureerd
+Inter-vlan routing geconfigureerd
+HSRP geconfigureerd op de CSW Switches (L3)
+
+
+Fase 4:
+Instellen van de ISP configuratie.
+Instellen van de Firewall router in NY
+Instellen van de Firewall router in BRU
+IP DHCP Relay geconfigureerd voor NY
