@@ -1,0 +1,45 @@
+enable
+configure terminal
+hostname FW_BRU
+no ip domain-lookup
+! Interface Configuratie
+interface Loopback0
+description Loopback BXL-RTR-1
+ip address 10.4.5.255 255.255.255.255
+no shutdown
+interface GigabitEthernet0/0
+description Connection to BXL-CSW-1 Fa0/20
+ip address 10.4.5.241 255.255.255.252
+no ip helper-address 10.1.0.5
+ip helper-address 10.4.6.10
+no shutdown
+interface GigabitEthernet0/1
+description Connection to BXL-CSW-2 Fa0/20
+ip address 10.4.5.245 255.255.255.252
+no shutdown
+interface Serial0/1/0
+description WAN Link to ISP
+ip address 192.168.10.6 255.255.255.252
+no shutdown
+interface Serial0/1/1
+description Point-to-Point 1 to NYC-RTR-1
+ip address 172.16.0.13 255.255.255.252
+no shutdown
+! Static Routing
+ip route 10.4.0.0 255.255.252.0 10.4.5.242
+ip route 10.4.4.0 255.255.255.0 10.4.5.242
+ip route 10.4.5.0 255.255.255.192 10.4.5.242
+ip route 10.4.0.0 255.255.252.0 10.4.5.246 5
+ip route 10.4.4.0 255.255.255.0 10.4.5.246 5
+ip route 10.4.5.0 255.255.255.192 10.4.5.246 5
+ip route 0.0.0.0 0.0.0.0 192.168.10.5
+! OSFP Configuratie
+router ospf 1
+router-id 10.4.5.255
+network 10.4.5.240 0.0.0.3 area 0
+network 10.4.5.244 0.0.0.3 area 0
+network 10.4.5.255 0.0.0.0 area 0
+network 192.168.10.4 0.0.0.3 area 0
+network 172.16.0.12 0.0.0.3 area 0
+default-information originate
+end

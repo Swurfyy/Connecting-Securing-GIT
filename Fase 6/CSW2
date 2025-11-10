@@ -1,0 +1,148 @@
+enable
+configure terminal
+
+! Basis configuratie
+hostname BXL-CSW-2
+no ip domain-lookup
+ip routing
+spanning-tree mode rapid-pvst
+
+! VLAN configuratie
+vlan 10
+name DATA
+exit
+vlan 20
+name WIRELESS
+exit
+vlan 100
+name MGMT
+exit
+vlan 200
+name SERVERS
+exit
+
+! Interface naar FW_BRU (BXL-RTR-1)
+interface fa0/20
+description Connection to BXL-RTR-1
+ip address 10.4.5.243 255.255.255.248
+no shutdown
+
+! Interface naar BXL-CSW-1 (Etherchannel)
+interface Fa0/23
+description Etherchannel to BXL-CSW-1
+no switchport
+no ip address
+channel-group 1 mode active
+no shutdown
+
+interface Fa0/24
+description Etherchannel to BXL-CSW-1
+no switchport
+no ip address
+channel-group 1 mode active
+no shutdown
+
+! Port-channel interface voor Etherchannel
+interface Port-channel1
+description HSRP Etherchannel to BXL-CSW-1
+ip address 10.4.5.225 255.255.255.252
+no shutdown
+
+! Interface naar Layer 2 switch 1 (STP link)
+interface fa0/1
+description STP link to BXL-CSW-1
+no switchport
+ip address 10.4.5.230 255.255.255.252
+no shutdown
+
+! Trunk interface naar Layer 2 Switch 1
+interface fa0/3
+description Trunk to BRU L2-S1
+switchport trunk encapsulation dot1q
+switchport mode trunk
+switchport trunk allowed vlan 10,20,100,200
+no shutdown
+
+! SVIs en HSRP (Standby)
+interface Vlan20
+description WIRELESS 10.4.0.0/22
+ip address 10.4.0.3 255.255.252.0
+standby 20 ip 10.4.0.1
+standby 20 priority 100
+standby 20 preempt
+ip helper-address 10.4.6.10
+no shutdown
+
+interface Vlan10
+description DATA 10.4.4.0/24
+ip address 10.4.4.3 255.255.255.0
+standby 10 ip 10.4.4.1
+standby 10 priority 100
+standby 10 preempt
+ip helper-address 10.4.6.10
+no shutdown
+
+interface Vlan100
+description MGMT 10.4.5.0/26
+ip address 10.4.5.3 255.255.255.192
+standby 100 ip 10.4.5.1
+standby 100 priority 100
+standby 100 preempt
+ip helper-address 10.4.6.10
+no shutdown
+
+interface Vlan200
+description SERVERS
+ip address 10.4.6.3 255.255.255.0
+standby 200 ip 10.4.6.1
+standby 200 priority 100
+standby 200 preempt
+ip helper-address 10.4.6.10
+no shutdown
+
+! EtherChannel naar BXL-CSW-1 (LACP)
+interface range Fa0/23 - 24
+description EtherChannel to L3-S1
+switchport trunk encapsulation dot1q
+switchport mode trunk
+switchport trunk allowed vlan 10,20,100,200
+channel-group 1 mode active
+no shutdown
+exit
+
+! Trunk naar L2-S2
+interface Fa0/4
+description Trunk to L2-S2
+switchport trunk encapsulation dot1q
+switchport mode trunk
+switchport trunk allowed vlan 10,20,100,200
+no shutdown
+
+! Cross-link naar L2
+interface Fa0/3
+description Cross-link to opposite side L2
+switchport trunk encapsulation dot1q
+switchport mode trunk
+switchport trunk allowed vlan 10,20,100,200
+no shutdown
+
+! OSPF Configuratie
+router ospf 1
+router-id 2.2.2.2
+network 10.4.5.240 0.0.0.7 area 0
+network 10.4.5.224 0.0.0.3 area 0
+network 10.4.5.228 0.0.0.3 area 0
+network 10.4.0.0 0.0.3.255 area 0
+network 10.4.4.0 0.0.0.255 area 0
+network 10.4.5.0 0.0.0.63 area 0
+network 10.4.6.0 0.0.0.255 area 0
+passive-interface Vlan20
+passive-interface Vlan10
+passive-interface Vlan100
+passive-interface Vlan200
+
+
+
+! Default route naar FW_BRU
+ip route 0.0.0.0 0.0.0.0 10.4.5.241
+ip route 0.0.0.0 0.0.0.0 10.4.5.226 50
