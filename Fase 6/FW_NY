@@ -1,0 +1,42 @@
+enable
+configure terminal
+hostname FW_NY
+no ip domain-lookup
+! Interfaces
+interface FastEthernet0/0
+description Reserved for future NY Core Switch uplink
+shutdown
+interface FastEthernet0/1
+description WAN Link to Provider
+ip address 192.168.10.1 255.255.255.252
+no shutdown
+interface Loopback0
+description Loopback NYC-RTR-1
+ip address 10.1.5.255 255.255.255.255
+! Static Routing
+ip route 10.1.0.0 255.255.252.0 10.1.5.242
+ip route 10.1.4.0 255.255.255.0 10.1.5.242
+ip route 10.1.5.0 255.255.255.192 10.1.5.242
+ip route 0.0.0.0 0.0.0.0 192.168.10.2
+! DHCP NY
+ip dhcp excluded-address 10.1.0.1 10.1.0.19
+ip dhcp excluded-address 10.1.4.1 10.1.4.19
+ip dhcp pool NY_WLAN
+network 10.1.0.0 255.255.252.0
+default-router 10.1.0.1
+dns-server 8.8.8.8
+domain-name allsafe1.edu
+ip dhcp pool NY_DATA
+network 10.1.4.0 255.255.255.0
+default-router 10.1.4.1
+dns-server 8.8.8.8
+domain-name allsafe1.edu
+! OSPF WAN Integration
+router ospf 1
+router-id 10.1.5.255
+network 192.168.10.0 0.0.0.3 area 0
+network 10.1.5.240 0.0.0.3 area 0
+network 10.1.5.255 0.0.0.0 area 0
+redistribute static subnets
+passive-interface FastEthernet0/0
+end
