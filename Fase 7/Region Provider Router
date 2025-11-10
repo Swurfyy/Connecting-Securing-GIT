@@ -1,0 +1,21 @@
+R_Router provider configuratie:
+
+! Provider Router
+enable
+configure terminal
+hostname R_Provider
+no ip domain-lookup
+
+interface fa0/0
+description Link to FW_NY
+ip address 192.168.10.2 255.255.255.252
+no shutdown
+
+interface serial0/1/0
+description WAN Link to Provider
+ip address 192.168.10.6 255.255.255.252
+no shutdown
+exit
+
+router ospf 1
+network 192.168.10.4 0.0.0.3 area 0
