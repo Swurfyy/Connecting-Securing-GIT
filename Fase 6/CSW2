@@ -2,7 +2,7 @@ enable
 configure terminal
 
 ! Basis configuratie
-hostname BXL-CSW-2
+hostname BRU-CSW-2
 no ip domain-lookup
 ip routing
 spanning-tree mode rapid-pvst
@@ -21,22 +21,22 @@ vlan 200
 name SERVERS
 exit
 
-! Interface naar FW_BRU (BXL-RTR-1)
+! Interface naar FW_BRU (BRU-RTR-1)
 interface fa0/20
-description Connection to BXL-RTR-1
+description Connection to BRU-RTR-1
 ip address 10.4.5.243 255.255.255.248
 no shutdown
 
-! Interface naar BXL-CSW-1 (Etherchannel)
+! Interface naar BRU-CSW-1 (Etherchannel)
 interface Fa0/23
-description Etherchannel to BXL-CSW-1
+description Etherchannel to BRU-CSW-1
 no switchport
 no ip address
 channel-group 1 mode active
 no shutdown
 
 interface Fa0/24
-description Etherchannel to BXL-CSW-1
+description Etherchannel to BRU-CSW-1
 no switchport
 no ip address
 channel-group 1 mode active
@@ -44,13 +44,13 @@ no shutdown
 
 ! Port-channel interface voor Etherchannel
 interface Port-channel1
-description HSRP Etherchannel to BXL-CSW-1
+description HSRP Etherchannel to BRU-CSW-1
 ip address 10.4.5.225 255.255.255.252
 no shutdown
 
 ! Interface naar Layer 2 switch 1 (STP link)
 interface fa0/1
-description STP link to BXL-CSW-1
+description STP link to BRU-CSW-1
 no switchport
 ip address 10.4.5.230 255.255.255.252
 no shutdown
@@ -100,7 +100,7 @@ standby 200 preempt
 ip helper-address 10.4.6.10
 no shutdown
 
-! EtherChannel naar BXL-CSW-1 (LACP)
+! EtherChannel naar BRU-CSW-1 (LACP)
 interface range Fa0/23 - 24
 description EtherChannel to L3-S1
 switchport trunk encapsulation dot1q
