@@ -28,25 +28,25 @@ Dit is de L2-S2.
 # Poorten per toestel:
 
 ## CSW1:
-- 0/1 -> L2-S1 0/1
-- 0/3 -> L2-S2 0/3
-- 0/23 -> CSW2 0/23
-- 0/24 -> CSW2 0/24
+- Fa0/1 -> L2-S1 Fa0/1
+- Fa0/3 -> L2-S2 Fa0/3
+- Fa0/23 -> CSW2 Fa0/23
+- Fa0/24 -> CSW2 Fa0/24
 
 
 ## CSW2
--
--
--
+- Fa0/1 -> L2-S1 Fa0/2
+- Fa0/3 -> L2-S2 Fa0/4
+- Fa0/23 -> CSW1 Fa0/23
+- Fa0/24 -> CSW1 Fa0/24
 
 ## L2-S1
--
--
--
+- Fa0/1 -> CSW1 Fa0/1
+- Fa0/2 -> CSW2 Fa0/1
 
 ## L2-S2
--
--
+- Fa0/3 -> CSW1 Fa0/3
+- Fa0/4 -> CSW2 Fa0/3
 -
 
 ## Palo Alto Brussel
