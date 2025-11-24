@@ -24,6 +24,7 @@ exit
 ! Interface naar FW_BRU (BRU-RTR-1)
 interface fa0/20
 description Connection to BRU-RTR-1
+no switchport
 ip address 10.4.5.243 255.255.255.248
 no shutdown
 
