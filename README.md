@@ -2,13 +2,13 @@
 De GIT voor Connecting &amp; Securing Networking | Documentatie
 
 
-# 1. Welke devices hebben welke functie?
+# 1. Welke devices hebben welke functie? | Rechterzijde 
 ## Routers:
-- 1. De bovenste router:
-
-- 2. De middelste router:
-
-- 3. De onderste router
+- De bovenste router:
+  
+- De middelste router:
+  
+- De onderste router
 
 ## Switches
 ### Layer 3:
@@ -28,10 +28,10 @@ Dit is de L2-S2.
 # Poorten per toestel:
 
 ## CSW1:
-- 0/1  -> L2-S1 0/1
-- 0/3  -> L2-S2 0/3
-- 0/23 -> CSW2  0/23
-- 0/24 -> CSW2  0/24
+- 0/1 -> L2-S1 0/1
+- 0/3 -> L2-S2 0/3
+- 0/23 -> CSW2 0/23
+- 0/24 -> CSW2 0/24
 
 
 ## CSW2
@@ -45,6 +45,43 @@ Dit is de L2-S2.
 -
 
 ## L2-S2
+-
+-
+-
+
+## Palo Alto Brussel
+-
+-
+-
+
+## Region Provider Router
+-
+-
+-
+
+# 2. Welke devices hebben welke functie? | Linkerzijde 
+
+## Region Provider Router
+-
+-
+-
+
+## R1 Router on a stick
+-
+-
+-
+
+## R2 Router on a stick
+-
+-
+-
+
+## AS-S1
+-
+-
+-
+
+## AS-S2
 -
 -
 -
