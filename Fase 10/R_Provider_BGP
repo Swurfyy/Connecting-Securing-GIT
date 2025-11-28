@@ -1,0 +1,44 @@
+! Provider Router BGP Configuration
+enable
+configure terminal
+hostname R_Provider
+no ip domain-lookup
+! Primary interfaces
+interface fa0/0
+description Link naar FW_NY
+ip address 192.168.10.2 255.255.255.252
+no shutdown
+interface serial0/1/0
+description Primary WAN Link to FW_BRU
+ip address 192.168.10.5 255.255.255.252
+no shutdown
+! Redundant interfaces
+interface fa0/1
+description Secondary Link to FW_NY
+ip address 192.168.10.13 255.255.255.252
+no shutdown
+interface serial0/2/0
+description Secondary WAN Link to FW_BRU
+ip address 192.168.10.9 255.255.255.252
+no shutdown
+! OSPF Configuratie
+router ospf 1
+network 192.168.10.0 0.0.0.3 area 0
+network 192.168.10.4 0.0.0.3 area 0
+network 192.168.10.8 0.0.0.3 area 0
+network 192.168.10.12 0.0.0.3 area 0
+! BGP Configuration
+router bgp 65001
+bgp router-id 192.168.10.2
+! Neighbor FW_NY 
+neighbor 192.168.10.1 remote-as 65000
+neighbor 192.168.10.1 description Eerste link naar FW_NY
+neighbor 192.168.10.14 remote-as 65000
+neighbor 192.168.10.14 description Tweede link naar FW_NY
+! Neighbor FW_BRU
+neighbor 192.168.10.6 remote-as 65000
+neighbor 192.168.10.6 description Eerste link naar FW_BRU
+neighbor 192.168.10.10 remote-as 65000
+neighbor 192.168.10.10 description Tweede link naar FW_BRU
+end
+
