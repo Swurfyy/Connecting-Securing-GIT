@@ -1,0 +1,31 @@
+! Access Switch 2 New York
+enable
+configure terminal
+hostname NY-ACSW2
+no ip domain-lookup
+! VLANs
+vlan 10
+ name DATA
+vlan 20
+ name WIRELESS
+vlan 100
+ name MGMT
+vlan 200
+ name SERVERS
+! Trunk naar ROAS2
+interface FastEthernet0/1
+ description Trunk to NY-ROAS2
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,100,200
+! Mgmt SVI
+interface Vlan100
+ ip address 10.1.5.4 255.255.255.192
+ no shutdown
+ip default-gateway 10.1.5.2
+! Lines
+line vty 0 4
+ logging synchronous
+line con 0
+ logging synchronous
+end
+
