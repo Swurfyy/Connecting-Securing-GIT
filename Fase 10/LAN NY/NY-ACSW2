@@ -1,4 +1,4 @@
-! Access Switch 2 New York
+! Access Switch 2 Chicago
 enable
 configure terminal
 hostname NY-ACSW2
@@ -19,9 +19,9 @@ interface FastEthernet0/1
  switchport trunk allowed vlan 10,20,100,200
 ! Mgmt SVI
 interface Vlan100
- ip address 10.1.5.4 255.255.255.192
+ ip address 10.2.2.3 255.255.255.192
  no shutdown
-ip default-gateway 10.1.5.2
+ip default-gateway 10.2.2.1
 ! Lines
 line vty 0 4
  logging synchronous
