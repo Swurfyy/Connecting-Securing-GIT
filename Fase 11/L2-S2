@@ -1,0 +1,81 @@
+enable
+configure terminal
+
+! Basis configuratie
+hostname BRU-L2-S2
+no ip domain-lookup
+spanning-tree mode rapid-pvst
+
+! VLAN configuratie
+vlan 10
+name DATA
+exit
+vlan 20
+name WIRELESS
+exit
+vlan 100
+name MGMT
+exit
+vlan 200
+name SERVERS
+exit
+
+! Trunk interfaces naar L3 switches
+interface Fa0/3
+description Trunk to BRU-CSW-1
+switchport trunk encapsulation dot1q
+switchport mode trunk
+switchport trunk allowed vlan 10,20,100,200
+no shutdown
+
+interface Fa0/4
+description Trunk to BRU-CSW-2
+switchport trunk encapsulation dot1q
+switchport mode trunk
+switchport trunk allowed vlan 10,20,100,200
+no shutdown
+
+interface vlan 100
+ip address 10.4.5.7 255.255.255.192
+no shutdown
+exit
+! DHCP Snooping configuratie
+ip dhcp snooping
+ip dhcp snooping vlan 10,20,100,200
+interface Fa0/3
+ip dhcp snooping trust
+exit
+
+interface Fa0/4
+ip dhcp snooping trust
+exit
+! Port Security configuratie
+interface range Fa0/5 - 22
+switchport mode access
+switchport port-security
+switchport port-security maximum 2
+switchport port-security violation restrict
+switchport port-security mac-address sticky
+spanning-tree portfast
+spanning-tree bpduguard enable
+no shutdown
+exit
+! Ongebruikte poorten beveiligen
+interface range Fa0/0 - 2, Fa0/23 - 24
+switchport mode access
+switchport port-security
+switchport port-security maximum 1
+switchport port-security violation shutdown
+switchport port-security mac-address sticky
+shutdown
+exit
+spanning-tree portfast bpduguard default
+interface Fa0/3
+spanning-tree guard root
+exit
+
+interface Fa0/4
+spanning-tree guard root
+exit
+end
+
