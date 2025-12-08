@@ -1,56 +1,71 @@
-# Palo Alto PA-440 CLI config equivalent voor Cisco FW_BRU (Fase 9)
-# Aanpassen van poortnummers indien je andere fysieke interfaces gebruikt.
 configure
 
-# Virtual router
+delete rulebase nat rules NAT_PRIMARY
+delete rulebase nat rules NAT_SECONDARY
+delete rulebase nat rules INSIDE-OUTSIDE
+delete rulebase security rules INSIDE-OUTSIDE
+
+delete zone WAN network layer3 ethernet1/3
+delete zone LAN network layer3 ethernet1/2
+delete zone LAN network layer3 ethernet1/4
+delete zone TRUST network layer3 ethernet1/1
+delete zone Inside1
+delete zone Inside2
+delete zone P2P
+delete zone Loopbacks
+delete zone WAN
+
+delete network virtual-router VR1 routing-table ip static-route
+delete network virtual-router VR1 protocol ospf
+delete network virtual-router VR1 interface ethernet1/1
+delete network virtual-router VR1 interface ethernet1/2
+delete network virtual-router VR1 interface ethernet1/3
+delete network virtual-router VR1 interface ethernet1/4
+delete network virtual-router VR1 interface loopback.1
+delete network virtual-router VR1
+
+# verwijder ping-profiel references (zet naar none)
+set network interface ethernet ethernet1/1 layer3 interface-management-profile none
+set network interface ethernet ethernet1/2 layer3 interface-management-profile none
+set network interface ethernet ethernet1/3 layer3 interface-management-profile none
+set network interface ethernet ethernet1/4 layer3 interface-management-profile none
+delete network profiles interface-management-profile ping-allow
+
 set network virtual-router VR1
+set network profiles interface-management-profile ping-allow ping yes
 
-# Zones
-set zone Inside1 network layer3 ethernet1/1
-set zone Inside2 network layer3 ethernet1/2
-set zone WAN     network layer3 ethernet1/3
-set zone P2P     network layer3 ethernet1/4
-set zone Loopbacks network layer3 loopback.1
-
-# Interfaces (pas poortnummers aan indien nodig)
 set network interface ethernet ethernet1/1 layer3 ip 10.4.5.241/30
 set network interface ethernet ethernet1/1 layer3 interface-management-profile ping-allow
-set network interface ethernet ethernet1/1 layer3 virtual-router VR1
-set network interface ethernet ethernet1/1 layer3 zone Inside1
+set network virtual-router VR1 interface ethernet1/1
+set zone Inside1 network layer3 ethernet1/1
 
 set network interface ethernet ethernet1/2 layer3 ip 10.4.5.245/30
 set network interface ethernet ethernet1/2 layer3 interface-management-profile ping-allow
-set network interface ethernet ethernet1/2 layer3 virtual-router VR1
-set network interface ethernet ethernet1/2 layer3 zone Inside2
+set network virtual-router VR1 interface ethernet1/2
+set zone Inside2 network layer3 ethernet1/2
 
 set network interface ethernet ethernet1/3 layer3 ip 192.168.10.6/30
 set network interface ethernet ethernet1/3 layer3 interface-management-profile ping-allow
-set network interface ethernet ethernet1/3 layer3 virtual-router VR1
-set network interface ethernet ethernet1/3 layer3 zone WAN
+set network virtual-router VR1 interface ethernet1/3
+set zone WAN network layer3 ethernet1/3
 
 set network interface ethernet ethernet1/4 layer3 ip 172.16.0.13/30
 set network interface ethernet ethernet1/4 layer3 interface-management-profile ping-allow
-set network interface ethernet ethernet1/4 layer3 virtual-router VR1
-set network interface ethernet ethernet1/4 layer3 zone P2P
+set network virtual-router VR1 interface ethernet1/4
+set zone P2P network layer3 ethernet1/4
 
-# Loopback
 set network interface loopback loopback.1 layer3 ip 10.4.5.255/32
-set network interface loopback loopback.1 layer3 virtual-router VR1
-set network interface loopback loopback.1 layer3 zone Loopbacks
+set network virtual-router VR1 interface loopback.1
+set zone Loopbacks network layer3 loopback.1
 
-# Static routes (primair via ethernet1/1, backup via ethernet1/2, default via WAN)
-set network virtual-router VR1 routing-table ip static-route NET-10.4.0.0/22 interface ethernet1/1 destination 10.4.0.0/22 nexthop ip-address 10.4.5.242
-set network virtual-router VR1 routing-table ip static-route NET-10.4.4.0/24 interface ethernet1/1 destination 10.4.4.0/24 nexthop ip-address 10.4.5.242
-set network virtual-router VR1 routing-table ip static-route NET-10.4.5.0/26 interface ethernet1/1 destination 10.4.5.0/26 nexthop ip-address 10.4.5.242
+set network virtual-router VR1 routing-table ip static-route NET_10_4_0_22 destination 10.4.0.0/22 nexthop ip-address 10.4.5.242 interface ethernet1/1
+set network virtual-router VR1 routing-table ip static-route NET_10_4_4_24 destination 10.4.4.0/24 nexthop ip-address 10.4.5.242 interface ethernet1/1
+set network virtual-router VR1 routing-table ip static-route NET_10_4_5_26 destination 10.4.5.0/26 nexthop ip-address 10.4.5.242 interface ethernet1/1
+set network virtual-router VR1 routing-table ip static-route BK_10_4_0_22 destination 10.4.0.0/22 nexthop ip-address 10.4.5.246 interface ethernet1/2 metric 5
+set network virtual-router VR1 routing-table ip static-route BK_10_4_4_24 destination 10.4.4.0/24 nexthop ip-address 10.4.5.246 interface ethernet1/2 metric 5
+set network virtual-router VR1 routing-table ip static-route BK_10_4_5_26 destination 10.4.5.0/26 nexthop ip-address 10.4.5.246 interface ethernet1/2 metric 5
+set network virtual-router VR1 routing-table ip static-route DEFAULT destination 0.0.0.0/0 nexthop ip-address 192.168.10.5 interface ethernet1/3
 
-set network virtual-router VR1 routing-table ip static-route NET-10.4.0.0/22-BK metric 5 interface ethernet1/2 destination 10.4.0.0/22 nexthop ip-address 10.4.5.246
-set network virtual-router VR1 routing-table ip static-route NET-10.4.4.0/24-BK metric 5 interface ethernet1/2 destination 10.4.4.0/24 nexthop ip-address 10.4.5.246
-set network virtual-router VR1 routing-table ip static-route NET-10.4.5.0/26-BK metric 5 interface ethernet1/2 destination 10.4.5.0/26 nexthop ip-address 10.4.5.246
-
-set network virtual-router VR1 routing-table ip static-route DEFAULT interface ethernet1/3 destination 0.0.0.0/0 nexthop ip-address 192.168.10.5
-
-# OSPF area 0 (zoals Cisco)
-set network virtual-router VR1 protocol ospf enable yes
 set network virtual-router VR1 protocol ospf router-id 10.4.5.255
 set network virtual-router VR1 protocol ospf area 0.0.0.0
 set network virtual-router VR1 protocol ospf area 0.0.0.0 interface ethernet1/1 enable yes
@@ -58,18 +73,11 @@ set network virtual-router VR1 protocol ospf area 0.0.0.0 interface ethernet1/2 
 set network virtual-router VR1 protocol ospf area 0.0.0.0 interface ethernet1/3 enable yes
 set network virtual-router VR1 protocol ospf area 0.0.0.0 interface ethernet1/4 enable yes
 set network virtual-router VR1 protocol ospf area 0.0.0.0 interface loopback.1 enable yes passive yes
+set network virtual-router VR1 protocol ospf enable yes
 
-# Management-profiel voor ping
-set network profiles interface-management-profile ping-allow ping yes
-
-# Security policies (tijdelijk permissief; verstrengen naar behoefte)
-set rulebase security rules TEMP-Inside-to-WAN from [ Inside1 Inside2 ] to [ WAN ] source any destination any application any service any action allow
-set rulebase security rules TEMP-Inside-to-P2P from [ Inside1 Inside2 ] to [ P2P ] source any destination any application any service any action allow
-set rulebase security rules TEMP-P2P-to-Inside from [ P2P ] to [ Inside1 Inside2 ] source any destination any application any service any action allow
-set rulebase security rules TEMP-WAN-to-Inside from [ WAN ] to [ Inside1 Inside2 ] source any destination any application any service any action allow
-
-# (Optioneel) NAT voor internet-uit via WAN:
-# set rulebase nat rules OUT-PAT from [ Inside1 Inside2 ] to [ WAN ] source-translation dynamic-ip-and-port interface-address interface ethernet1/3
+set rulebase security rules TEMP-Inside-to-WAN from Inside1 Inside2 to WAN source any destination any application any service any action allow
+set rulebase security rules TEMP-Inside-to-P2P from Inside1 Inside2 to P2P source any destination any application any service any action allow
+set rulebase security rules TEMP-P2P-to-Inside from P2P to Inside1 Inside2 source any destination any application any service any action allow
+set rulebase security rules TEMP-WAN-to-Inside from WAN to Inside1 Inside2 source any destination any application any service any action allow
 
 commit
-
