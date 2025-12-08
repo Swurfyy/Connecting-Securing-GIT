@@ -36,7 +36,7 @@ interface FastEthernet0/1.200
 ! Link naar FW_NY inside
 interface FastEthernet0/0
  description Link to FW_NY inside
- ip address 10.1.5.242 255.255.255.192
+ ip address 10.1.7.2 255.255.255.252
  no shutdown
 ! Interconnect naar ROAS2
 interface Serial0/1/0
@@ -44,14 +44,15 @@ interface Serial0/1/0
  ip address 172.16.0.1 255.255.255.252
  no shutdown
 ! Routing
-ip route 0.0.0.0 0.0.0.0 10.1.5.241
+ip route 0.0.0.0 0.0.0.0 10.1.7.1
+ip route 10.2.0.0 255.255.252.0 172.16.0.2
 router ospf 1
  router-id 10.1.5.242
  network 10.1.0.0 0.0.3.255 area 0
  network 10.1.4.0 0.0.0.255 area 0
  network 10.1.5.0 0.0.0.63 area 0
  network 10.1.6.0 0.0.0.255 area 0
- network 10.1.5.240 0.0.0.3 area 0
+ network 10.1.7.0 0.0.0.3 area 0
  network 172.16.0.0 0.0.0.3 area 0
  default-information originate
  passive-interface FastEthernet0/1

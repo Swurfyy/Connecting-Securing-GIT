@@ -2,21 +2,24 @@
     configure terminal
     hostname FW_NY
     no ip domain-lookup
-    ! Interface Configuratie
-    interface FastEthernet0/0
-    description Reserved for future NY Core Switch uplink
-    shutdown
-    interface FastEthernet0/1
-    description Primary WAN Link to R_Provider
-    ip address 192.168.10.1 255.255.255.252
-    no shutdown
-    interface Loopback0
-    description Loopback NYC-RTR-1
-    ip address 10.1.5.255 255.255.255.255
+! Interface Configuratie
+interface FastEthernet0/0
+ description Inside link to NY-ROAS1
+ ip address 10.1.7.1 255.255.255.252
+ ip nat inside
+ no shutdown
+interface FastEthernet0/1
+ description Primary WAN Link to R_Provider
+ ip address 192.168.10.1 255.255.255.252
+ ip nat outside
+ no shutdown
+interface Loopback0
+ description Loopback NYC-RTR-1
+ ip address 10.1.5.255 255.255.255.255
     ! Static Routing
-    ip route 10.1.0.0 255.255.252.0 10.1.5.242
-    ip route 10.1.4.0 255.255.255.0 10.1.5.242
-    ip route 10.1.5.0 255.255.255.192 10.1.5.242
+ip route 10.1.0.0 255.255.252.0 10.1.7.2
+ip route 10.1.4.0 255.255.255.0 10.1.7.2
+ip route 10.1.5.0 255.255.255.192 10.1.7.2
     ip route 10.4.0.0 255.255.248.0 192.168.10.2
     ip route 172.16.0.12 255.255.255.252 192.168.10.2
     ip route 0.0.0.0 0.0.0.0 192.168.10.2
@@ -33,14 +36,14 @@
     default-router 10.1.4.1
     dns-server 8.8.8.8
     domain-name allsafe1.edu
-    ! OSPF Configuratie
-    router ospf 1
-    router-id 10.1.5.255
-    network 192.168.10.0 0.0.0.3 area 0
-    network 10.1.5.240 0.0.0.3 area 0
-    network 10.1.5.255 0.0.0.0 area 0
-    redistribute static subnets
-    passive-interface FastEthernet0/0
+! OSPF Configuratie
+router ospf 1
+ router-id 10.1.5.255
+ network 192.168.10.0 0.0.0.3 area 0
+ network 10.1.7.0 0.0.0.3 area 0
+ network 10.1.5.255 0.0.0.0 area 0
+ redistribute static subnets
+ no passive-interface FastEthernet0/0
     ! BGP Configuratie
     router bgp 65000
     bgp router-id 10.1.5.255
